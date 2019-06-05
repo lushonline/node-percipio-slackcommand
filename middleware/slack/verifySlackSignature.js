@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const qs = require('qs');
 const debugFactory = require('debug');
+const timingSafeCompare = require('tsscmp');
 
 const debug = debugFactory('app:verifySlackSignature');
 
@@ -31,7 +32,7 @@ function verifySlackSignature(secret) {
     // Slack signature missing
     if (!signature) {
       debug('slack signature missing');
-      return res.status(404).end();
+      return res.status(404);
     }
 
     // Request timestamp
@@ -40,7 +41,7 @@ function verifySlackSignature(secret) {
     // Slack timestamp missing
     if (!ts) {
       debug('slack timestamp missing');
-      return res.status(404).end();
+      return res.status(404);
     }
 
     // Request body
@@ -52,19 +53,19 @@ function verifySlackSignature(secret) {
 
     if (ts < fiveMinutesAgo) {
       debug('request is older than 5 minutes');
-      return res.status(404).end();
+      return res.status(404);
     }
 
     const hmac = crypto.createHmac('sha256', signingSecret);
     const [version, hash] = signature.split('=');
     hmac.update(`${version}:${ts}:${body}`);
 
-    if (crypto.timingSafeCompare(hash, hmac.digest('hex'))) {
+    if (timingSafeCompare(hash, hmac.digest('hex'))) {
       next();
     }
 
     debug('request signature is not valid');
-    return res.status(404).end();
+    return res.status(404);
   };
 }
 

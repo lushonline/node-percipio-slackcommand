@@ -211,12 +211,10 @@ const generateSlackDelayedResponse = async (request, slackResponseUrl) => {
 
 const view = (slackReqObj, res) => {
   if (!slackReqObj.body) {
-    res
-      .json({
-        response_type: 'ephemeral',
-        blocks: slackSection(slackText('Invalid request', slackMarkdownFormat))
-      })
-      .end();
+    res.json({
+      response_type: 'ephemeral',
+      blocks: slackSection(slackText('Invalid request', slackMarkdownFormat))
+    });
   }
 
   const options = { keywords: ['prefer'] };
@@ -228,12 +226,10 @@ const view = (slackReqObj, res) => {
   };
 
   if (_.isEmpty(request.q)) {
-    res
-      .json({
-        response_type: 'ephemeral',
-        blocks: slackSection(slackText('Invalid query', slackMarkdownFormat))
-      })
-      .end();
+    res.json({
+      response_type: 'ephemeral',
+      blocks: slackSection(slackText('Invalid query', slackMarkdownFormat))
+    });
   }
 
   if (_.isObject(searchQueryObj) && searchQueryObj.prefer) {
@@ -257,21 +253,19 @@ const view = (slackReqObj, res) => {
   }
 
   generateSlackDelayedResponse(request, slackReqObj.body.response_url);
-  res
-    .json({
-      response_type: 'ephemeral',
-      blocks: [
-        slackSection(
-          slackText(
-            `Let me see what I can find for you about *${
-              request.q
-            }*${stringUtils.getModalityMarkdown(request)}`,
-            slackMarkdownFormat
-          )
+  res.json({
+    response_type: 'ephemeral',
+    blocks: [
+      slackSection(
+        slackText(
+          `Let me see what I can find for you about *${request.q}*${stringUtils.getModalityMarkdown(
+            request
+          )}`,
+          slackMarkdownFormat
         )
-      ]
-    })
-    .end();
+      )
+    ]
+  });
 };
 
 module.exports = {

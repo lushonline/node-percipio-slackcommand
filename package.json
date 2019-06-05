@@ -35,7 +35,8 @@
 		"moment": "^2.24.0",
 		"qs": "^6.7.0",
 		"search-query-parser": "^1.5.2",
-		"slack-block-kit": "^0.9.3"
+		"slack-block-kit": "^0.9.3",
+		"tsscmp": "^1.0.6"
 	},
 	"devDependencies": {
 		"auto-changelog": "^1.13.0",
