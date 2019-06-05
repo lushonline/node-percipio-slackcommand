@@ -1,6 +1,6 @@
 {
 	"name": "node-percipio-slackcommand",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "Express app providing slack slash command for Percipio Federated Search",
 	"main": "start.js",
 	"scripts": {
