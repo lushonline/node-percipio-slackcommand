@@ -1,7 +1,6 @@
 const axios = require('axios');
 const _ = require('lodash');
 const searchQuery = require('search-query-parser');
-const debugFactory = require('debug');
 const slackBlockKit = require('slack-block-kit');
 
 // Slack Block Items
@@ -17,8 +16,6 @@ const orgid = process.env.CUSTOMER_ORGID || null;
 const bearer = process.env.CUSTOMER_BEARER || null;
 const percipioSite = process.env.PERCIPIOSITE || null;
 const maxItems = process.env.MAX_ITEMS || 5;
-
-const debug = debugFactory('app:slackController');
 
 /**
  * Get a MarkDown representation of a Percipio Item
@@ -90,6 +87,7 @@ const getPercipioItemSlackBlock = percipioItem => {
     )
   });
 };
+
 /**
  * Call the Percipio /content-discovery/v1/organizations/${orgid}/search-content
  *
@@ -134,42 +132,33 @@ const generateSlackDelayedResponse = async (request, slackResponseUrl) => {
     .catch(error => {
       // handle error
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        debug('getSearchResults Response Error. Data: ', JSON.stringify(error.response.data));
-        debug('getSearchResults Response Error. Status: ', error.response.status);
-        debug('getSearchResults Response Error. Headers: ', error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        debug('getSearchResults Request Error. Request: ', error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        debug('getSearchResults Request Error. Message: ', error.message);
-      }
-      debug('getSearchResults Request Error. Config: ', error.config);
-
-      axios.post(slackResponseUrl, {
-        response_type: 'ephemeral',
-        blocks: [
-          slackDivider(),
-          slackSection(
-            slackText(
-              'Oops! Something went wrong when we tried to get the information for you',
-              slackMarkdownFormat
+        axios.post(slackResponseUrl, {
+          response_type: 'ephemeral',
+          blocks: [
+            slackDivider(),
+            slackSection(
+              slackText(
+                'Oops! Something went wrong when we tried to get the information for you',
+                slackMarkdownFormat
+              )
             )
-          )
-        ]
-      });
+          ]
+        });
+      }
     })
     .then(response => {
       const blocks = [];
       const totalRecords = parseInt(response.headers['x-total-count'], 10);
 
+      // Build the Percipio Search Link
       const percipioSearchUrl = new URL(percipioSite);
       percipioSearchUrl.pathname = '/search';
-      percipioSearchUrl.search = `q=${request.q}`;
+      percipioSearchUrl.searchParams.append('q', request.q);
+
+      if (request.modality) {
+        percipioSearchUrl.searchParams.append('modalities', _.lowerCase(request.modality));
+      }
+
       // Add a block with details of what we found
       blocks.push(
         slackSection(

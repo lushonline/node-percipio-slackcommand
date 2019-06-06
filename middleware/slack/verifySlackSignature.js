@@ -1,9 +1,6 @@
 const crypto = require('crypto');
 const qs = require('qs');
-const debugFactory = require('debug');
 const timingSafeCompare = require('tsscmp');
-
-const debug = debugFactory('app:verifySlackSignature');
 
 /**
  * Parse request and validate the Slack Signing Value
@@ -14,14 +11,15 @@ const debug = debugFactory('app:verifySlackSignature');
  * @public
  */
 
+// eslint-disable-next-line consistent-return
 function verifySlackSignature(secret) {
   const signingSecret = secret;
 
-  return function verifySignature(req, res, next) {
+  return function _verifySlackSignature(req, res, next) {
     // Signing secret not defined end
     if (!signingSecret) {
-      debug('signingSecret not defined');
-      return res.status(404).end();
+      // debug('signingSecret not defined');
+      throw new Error('signingSecret not defined');
     }
 
     const requestHeaders = req.headers;
@@ -31,8 +29,8 @@ function verifySlackSignature(secret) {
 
     // Slack signature missing
     if (!signature) {
-      debug('slack signature missing');
-      return res.status(404);
+      // debug('slack signature missing');
+      throw new Error('slack signature missing');
     }
 
     // Request timestamp
@@ -40,8 +38,8 @@ function verifySlackSignature(secret) {
 
     // Slack timestamp missing
     if (!ts) {
-      debug('slack timestamp missing');
-      return res.status(404);
+      // debug('slack timestamp missing');
+      throw new Error('slack timestamp missing');
     }
 
     // Request body
@@ -52,8 +50,8 @@ function verifySlackSignature(secret) {
     const fiveMinutesAgo = Math.floor(Date.now() / 1000) - 300;
 
     if (ts < fiveMinutesAgo) {
-      debug('request is older than 5 minutes');
-      return res.status(404);
+      // debug('request is older than 5 minutes');
+      throw new Error('request is older than 5 minutes');
     }
 
     const hmac = crypto.createHmac('sha256', signingSecret);
@@ -62,10 +60,10 @@ function verifySlackSignature(secret) {
 
     if (timingSafeCompare(hash, hmac.digest('hex'))) {
       next();
+    } else {
+      // debug('request signature is not valid');
+      throw new Error('request signature is not valid');
     }
-
-    debug('request signature is not valid');
-    return res.status(404);
   };
 }
 
