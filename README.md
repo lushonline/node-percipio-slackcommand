@@ -23,12 +23,14 @@ Create a new [Slash Command](https://api.slack.com/slash-commands)
 
 ### Application
 
-Once you have copied this reporsitory set the following NODE ENV variables:
+Once you have copied this repository set the following NODE ENV variables:
 
-- PERCIPIOSITE - This is the Base URI for your Percipio site (i.e. https://{customer}.percipio.com)
-- CUSTOMER_ORGID - This is the Percipio Organiation UUID for your Percipio Site
-- CUSTOMER_BEARER - This is the Percipio Bearer token for a Service Account with permissions for CONTENT DISCOVERY services.
-- SLACK_SIGNING_SECRET - This is the Slack Signing Secret created when setting up the Slash Command [https://api.slack.com/slash-commands](https://api.slack.com/slash-commands)
+| ENV | Derscription |
+| --- | --- |
+| `PERCIPIOSITE` | This is the Base URI for your Percipio site (i.e. https://{customer}.percipio.com) |
+| `CUSTOMER_ORGID` | This is the Percipio Organiation UUID for your Percipio Site |
+| `CUSTOMER_BEARER` | This is the Percipio Bearer token for a Service Account with permissions for CONTENT DISCOVERY services. |
+| `SLACK_SIGNING_SECRET` | This is the Slack Signing Secret created when setting up the Slash Command [https://api.slack.com/slash-commands](https://api.slack.com/slash-commands) |
 
 ## How to use it
 
