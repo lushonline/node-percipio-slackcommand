@@ -15,7 +15,7 @@ const stringUtils = require('../lib/stringUtils');
 const orgid = process.env.CUSTOMER_ORGID || null;
 const bearer = process.env.CUSTOMER_BEARER || null;
 const percipioSite = process.env.PERCIPIOSITE || null;
-const maxItems = process.env.MAX_ITEMS || 5;
+const maxItems = process.env.MAX_ITEMS || 3;
 
 /**
  * Get a MarkDown representation of a Percipio Item
@@ -98,7 +98,7 @@ const getSearchResults = async request => {
   let requestParams = request || {};
 
   const requestDefaults = {
-    max: 5,
+    max: 3,
     offset: 0,
     q: request.searchTerms
   };
@@ -174,7 +174,7 @@ const generateSlackDelayedResponse = async (request, slackResponseUrl) => {
       blocks.push(
         slackSection(
           slackText(
-            `You can see all *${totalRecords}* items we found on *<${percipioSearchUrl}|${percipioSite}>*`,
+            `You can see all *${totalRecords.toLocaleString()}* items we found on *<${percipioSearchUrl}|${percipioSite}>*`,
             slackMarkdownFormat
           )
         )
